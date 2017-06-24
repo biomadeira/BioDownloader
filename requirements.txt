@@ -1,0 +1,22 @@
+# This requirements file lists all third-party dependencies for this project.
+# These days I would just recommend a fresh install of Anaconda which comes with
+# all the goodies.
+
+# if you prefer to use virtualenv (for setting a local environment)
+
+# > pip install virtualenv
+# > cd BioDownload
+# > virtualenv venv
+# # using your python interpreter
+# > virtualenv -p /usr/bin/python3.6 lib
+# > source venv/bin/activate
+# > pip install -r requirements.txt
+# > deactivate
+
+# otherwise just (global install)
+# > pip install -r requirements.txt
+
+# requirements
+requests
+responses
+click
