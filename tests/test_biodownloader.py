@@ -27,6 +27,7 @@ import json
 import unittest
 import requests
 import responses
+from click.testing import CliRunner
 from contextlib import contextmanager
 
 try:
@@ -38,6 +39,7 @@ try:
 except ImportError:
     from unittest.mock import patch, MagicMock
 
+import biodownloader
 from biodownloader.fetchers import (flash,
                                     fetch_from_url_or_retry,
                                     fetch_summary_properties_pdbe,
@@ -47,6 +49,8 @@ from biodownloader.fetchers import (flash,
                                     download_data_from_uniprot,
                                     download_alignment_from_cath,
                                     download_alignment_from_pfam)
+
+from biodownloader.cli import downloads, file_downloader
 
 from biodownloader.config import config as c
 
@@ -118,6 +122,7 @@ class TestBioDownloader(unittest.TestCase):
         self.pfamid = "PF08124"
         self.flash = flash
         self.config = c
+        self.tmp = c.db_root
         self.fetch_from_url_or_retry = fetch_from_url_or_retry
         self.fetch_summary_properties_pdbe = fetch_summary_properties_pdbe
         self.fetch_preferred_assembly_id = fetch_preferred_assembly_id
@@ -126,6 +131,8 @@ class TestBioDownloader(unittest.TestCase):
         self.download_data_from_uniprot = download_data_from_uniprot
         self.download_alignment_from_cath = download_alignment_from_cath
         self.download_alignment_from_pfam = download_alignment_from_pfam
+        self.downloads = downloads
+        self.file_downloader = file_downloader
 
     def tearDown(self):
         """Remove testing framework."""
@@ -136,6 +143,7 @@ class TestBioDownloader(unittest.TestCase):
         self.pfamid = None
         self.flash = None
         self.config = None
+        self.tmp = None
         self.fetch_from_url_or_retry = None
         self.fetch_summary_properties_pdbe = None
         self.fetch_preferred_assembly_id = None
@@ -144,6 +152,8 @@ class TestBioDownloader(unittest.TestCase):
         self.download_data_from_uniprot = None
         self.download_alignment_from_cath = None
         self.download_alignment_from_pfam = None
+        self.downloads = None
+        self.file_downloader = None
 
     def test_flash(self):
         with captured_output() as (out, err):
@@ -278,39 +288,141 @@ class TestBioDownloader(unittest.TestCase):
     def test_download_structure_from_pdbe_pdb(self):
         self.download_structure_from_pdbe(self.pdbid, pdb=True)
         os.remove("{}{}{}.pdb".format(c.db_root, c.db_pdbx, self.pdbid))
+        self.file_downloader([self.pdbid], pdb=True)
+        os.remove("{}{}{}.pdb".format(c.db_root, c.db_pdbx, self.pdbid))
 
     def test_download_structure_from_pdbe_mmcif(self):
         self.download_structure_from_pdbe(self.pdbid, pdb=False)
+        os.remove("{}{}{}.cif".format(c.db_root, c.db_pdbx, self.pdbid))
+        self.file_downloader([self.pdbid], mmcif=True)
         os.remove("{}{}{}.cif".format(c.db_root, c.db_pdbx, self.pdbid))
 
     def test_download_structure_from_pdbe_mmcif_bio(self):
         self.download_structure_from_pdbe(self.pdbid, pdb=False, bio=True)
         os.remove("{}{}{}_bio.cif".format(c.db_root, c.db_pdbx, self.pdbid))
+        self.file_downloader([self.pdbid], mmcif=True, bio=True)
+        os.remove("{}{}{}_bio.cif".format(c.db_root, c.db_pdbx, self.pdbid))
 
     def test_download_sifts_from_ebi(self):
         self.download_sifts_from_ebi(self.pdbid)
+        os.remove("{}{}{}.xml".format(c.db_root, c.db_sifts, self.pdbid))
+        self.file_downloader([self.pdbid], sifts=True)
         os.remove("{}{}{}.xml".format(c.db_root, c.db_sifts, self.pdbid))
 
     def test_download_data_from_uniprot_fasta(self):
         self.download_data_from_uniprot(self.uniprotid, file_format="fasta")
         os.remove("{}{}{}.fasta".format(c.db_root, c.db_uniprot, self.uniprotid))
+        self.file_downloader([self.uniprotid], fasta=True)
+        os.remove("{}{}{}.fasta".format(c.db_root, c.db_uniprot, self.uniprotid))
 
     def test_download_data_from_uniprot_gff(self):
         self.download_data_from_uniprot(self.uniprotid, file_format="gff")
+        os.remove("{}{}{}.gff".format(c.db_root, c.db_uniprot, self.uniprotid))
+        self.file_downloader([self.uniprotid], gff=True)
         os.remove("{}{}{}.gff".format(c.db_root, c.db_uniprot, self.uniprotid))
 
     def test_download_data_from_uniprot_txt(self):
         self.download_data_from_uniprot(self.uniprotid, file_format="txt")
         os.remove("{}{}{}.txt".format(c.db_root, c.db_uniprot, self.uniprotid))
+        self.file_downloader([self.uniprotid], txt=True)
+        os.remove("{}{}{}.txt".format(c.db_root, c.db_uniprot, self.uniprotid))
 
     def test_download_alignment_from_cath(self):
         self.download_alignment_from_cath(self.cathid)
+        os.remove("{}{}{}.fasta".format(c.db_root, c.db_cath, self.cathid))
+        self.file_downloader([self.cathid], cath=True)
         os.remove("{}{}{}.fasta".format(c.db_root, c.db_cath, self.cathid))
 
     def test_download_alignment_from_pfam(self):
         self.download_alignment_from_pfam(self.pfamid)
         os.remove("{}{}{}.sth".format(c.db_root, c.db_pfam, self.pfamid))
+        self.file_downloader([self.pfamid], pfam=True)
+        os.remove("{}{}{}.sth".format(c.db_root, c.db_pfam, self.pfamid))
 
+    def test_cli_version(self):
+        runner = CliRunner()
+        result = runner.invoke(self.downloads, ['--version'])
+        self.assertEqual(result.exit_code, 0)
+        self.assertEqual("downloads, version {}\n"
+                         "".format(biodownloader.__version__), result.output)
+
+    def test_cli_help(self):
+        runner = CliRunner()
+        result = runner.invoke(self.downloads, ['-h'])
+        self.assertEqual(result.exit_code, 0)
+        result = runner.invoke(self.downloads, ['--help'])
+        self.assertEqual(result.exit_code, 0)
+
+    def test_cli_pdb_pdb(self):
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            result = runner.invoke(self.downloads, ['pdb', '--pdb', '--output',
+                                                    self.tmp, self.pdbid])
+            self.assertEqual(result.exit_code, 0)
+
+    def test_cli_pdb_mmcif(self):
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            result = runner.invoke(self.downloads, ['pdb', '--mmcif', '--output',
+                                                    self.tmp, self.pdbid])
+        self.assertEqual(result.exit_code, 0)
+
+    def test_cli_pdb_mmcif_bio(self):
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            result = runner.invoke(self.downloads, ['pdb', '--mmcif', '--bio',
+                                                    '--output', self.tmp, self.pdbid])
+        self.assertEqual(result.exit_code, 0)
+
+    def test_cli_sifts_sifts(self):
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            result = runner.invoke(self.downloads, ['sifts', '--sifts', '--output',
+                                                    self.tmp, self.pdbid])
+        self.assertEqual(result.exit_code, 0)
+
+    def test_cli_uniprot_fasta(self):
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            result = runner.invoke(self.downloads, ['uniprot', '--fasta', '--output',
+                                                    self.tmp, self.uniprotid])
+        self.assertEqual(result.exit_code, 0)
+
+    def test_cli_uniprot_txt(self):
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            result = runner.invoke(self.downloads, ['uniprot', '--txt', '--output',
+                                                    self.tmp, self.uniprotid])
+        self.assertEqual(result.exit_code, 0)
+
+    def test_cli_uniprot_gff(self):
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            result = runner.invoke(self.downloads, ['uniprot', '--gff', '--output',
+                                                    self.tmp, self.uniprotid])
+        self.assertEqual(result.exit_code, 0)
+
+    def test_cli_cath_cath(self):
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            result = runner.invoke(self.downloads, ['cath', '--cath', '--output',
+                                                    self.tmp, self.cathid])
+        self.assertEqual(result.exit_code, 0)
+
+    def test_cli_pfam_pfam(self):
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            result = runner.invoke(self.downloads, ['pfam', '--pfam', '--output',
+                                                    self.tmp, self.pfamid])
+        self.assertEqual(result.exit_code, 0)
+
+    def test_cli_pdb_pdb_override(self):
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            result = runner.invoke(self.downloads, ['pdb', '--pdb', '--override',
+                                                    '--output',
+                                                    self.tmp, self.pdbid])
+            self.assertEqual(result.exit_code, 0)
 
 if __name__ == '__main__':
     suite = unittest.TestLoader().loadTestsFromTestCase(TestBioDownloader)
