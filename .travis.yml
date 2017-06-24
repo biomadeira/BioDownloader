@@ -1,0 +1,22 @@
+# .travis.yml
+language:
+  - python
+python:
+  - 2.7
+  - 3.3
+  - 3.4
+  - 3.5
+  - 3.6
+  - pypy
+  - pypy3
+notifications:
+  - email: fabiomadeira@me.com
+install:
+  - "pip install ."
+  - "pip install -r requirements.txt"
+  - "pip install coveralls"
+script:
+  - python -m unittest discover
+  - coverage run --source=biodownloader setup.py test
+after_success:
+  - coveralls
