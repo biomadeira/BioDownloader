@@ -32,7 +32,7 @@ setup(
     # Basic package information.
     name='biodownloader',
     version=__version__,
-    packages=find_packages(exclude=["tests", 'tests*']),
+    packages=find_packages(),
 
     # Packaging options.
     include_package_data=True,
@@ -57,7 +57,7 @@ setup(
     # Metadata for PyPI.
     author=__author__,
     author_email=__email__,
-    license='MIT',
+    license='GPLv3',
     url='http://github.com/biomadeira/biodownloader/tree/master',
     keywords='download pdb uniprot sifts cath pfam python cli',
     description=('BioDownloader: a Command Line Tool for downloading '
