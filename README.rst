@@ -126,5 +126,5 @@ GNU General Public License v3 (GPLv3). See `license`_ for details.
    :target: https://github.com/biomadeira/BioDownloader/blob/master/LICENSE.md
 .. |Twitter: @biomadeira| image:: https://img.shields.io/badge/contact-@biomadeira-blue.svg?style=flat
    :target: https://twitter.com/biomadeira
-.. |Python: versions| image:: https://img.shields.io/badge/python-3.3,_3.4,_3.5,_3.6-blue.svg?style=flat
+.. |Python: versions| image:: https://img.shields.io/badge/python-3.4,_3.5,_3.6-blue.svg?style=flat
    :target: http://travis-ci.org/biomadeira/BioDownloader
