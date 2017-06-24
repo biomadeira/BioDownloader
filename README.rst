@@ -99,7 +99,7 @@ Changing where the files will be downloaded to...
 Dependencies
 ~~~~~~~~~~~~
 
-|Python2: versions| |Python3: versions| |PyPy: versions|
+|Python: versions|
 
 See the necessary `requirements`_ for this module.
 
@@ -126,9 +126,5 @@ GNU General Public License v3 (GPLv3). See `license`_ for details.
    :target: https://github.com/biomadeira/BioDownloader/blob/master/LICENSE.md
 .. |Twitter: @biomadeira| image:: https://img.shields.io/badge/contact-@biomadeira-blue.svg?style=flat
    :target: https://twitter.com/biomadeira
-.. |Python2: versions| image:: https://img.shields.io/badge/python2-2.7-blue.svg?style=flat
-   :target: http://travis-ci.org/biomadeira/BioDownloader
-.. |Python3: versions| image:: https://img.shields.io/badge/python3-3.3,_3.4,_3.5,_3.6-blue.svg?style=flat
-   :target: http://travis-ci.org/biomadeira/BioDownloader
-.. |PyPy: versions| image:: https://img.shields.io/badge/pypy-pypy,_pypy3-blue.svg?style=flat
+.. |Python: versions| image:: https://img.shields.io/badge/python-3.3,_3.4,_3.5,_3.6-blue.svg?style=flat
    :target: http://travis-ci.org/biomadeira/BioDownloader
