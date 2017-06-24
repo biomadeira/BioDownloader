@@ -120,7 +120,7 @@ GNU General Public License v3 (GPLv3). See `license`_ for details.
 
 .. |Build Status| image:: https://secure.travis-ci.org/biomadeira/BioDownloader.png?branch=master
    :target: http://travis-ci.org/biomadeira/BioDownloader
-.. |Coverage Status| image:: https://coveralls.io/repos/biomadeira/BioDownloader/badge.svg?branch=master&service=github
+.. |Coverage Status| image:: https://coveralls.io/repos/github/biomadeira/BioDownloader/badge.svg?branch=master
    :target: https://coveralls.io/github/biomadeira/BioDownloader?branch=master
 .. |License| image:: http://img.shields.io/badge/license-GPLv3-brightgreen.svg?style=flat
    :target: https://github.com/biomadeira/BioDownloader/blob/master/LICENSE.md
