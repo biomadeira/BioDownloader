@@ -43,6 +43,7 @@ setup(
         "requests",
         "responses",
         "click",
+        "mock",
     ],
 
     entry_points={
