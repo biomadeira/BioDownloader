@@ -365,56 +365,56 @@ class TestBioDownloader(unittest.TestCase):
         with runner.isolated_filesystem():
             result = runner.invoke(self.downloads, ['pdb', '--mmcif', '--output',
                                                     self.tmp, self.pdbid])
-        self.assertEqual(result.exit_code, 0)
+            self.assertEqual(result.exit_code, 0)
 
     def test_cli_pdb_mmcif_bio(self):
         runner = CliRunner()
         with runner.isolated_filesystem():
             result = runner.invoke(self.downloads, ['pdb', '--mmcif', '--bio',
                                                     '--output', self.tmp, self.pdbid])
-        self.assertEqual(result.exit_code, 0)
+            self.assertEqual(result.exit_code, 0)
 
     def test_cli_sifts_sifts(self):
         runner = CliRunner()
         with runner.isolated_filesystem():
             result = runner.invoke(self.downloads, ['sifts', '--sifts', '--output',
                                                     self.tmp, self.pdbid])
-        self.assertEqual(result.exit_code, 0)
+            self.assertEqual(result.exit_code, 0)
 
     def test_cli_uniprot_fasta(self):
         runner = CliRunner()
         with runner.isolated_filesystem():
             result = runner.invoke(self.downloads, ['uniprot', '--fasta', '--output',
                                                     self.tmp, self.uniprotid])
-        self.assertEqual(result.exit_code, 0)
+            self.assertEqual(result.exit_code, 0)
 
     def test_cli_uniprot_txt(self):
         runner = CliRunner()
         with runner.isolated_filesystem():
             result = runner.invoke(self.downloads, ['uniprot', '--txt', '--output',
                                                     self.tmp, self.uniprotid])
-        self.assertEqual(result.exit_code, 0)
+            self.assertEqual(result.exit_code, 0)
 
     def test_cli_uniprot_gff(self):
         runner = CliRunner()
         with runner.isolated_filesystem():
             result = runner.invoke(self.downloads, ['uniprot', '--gff', '--output',
                                                     self.tmp, self.uniprotid])
-        self.assertEqual(result.exit_code, 0)
+            self.assertEqual(result.exit_code, 0)
 
     def test_cli_cath_cath(self):
         runner = CliRunner()
         with runner.isolated_filesystem():
             result = runner.invoke(self.downloads, ['cath', '--cath', '--output',
                                                     self.tmp, self.cathid])
-        self.assertEqual(result.exit_code, 0)
+            self.assertEqual(result.exit_code, 0)
 
     def test_cli_pfam_pfam(self):
         runner = CliRunner()
         with runner.isolated_filesystem():
             result = runner.invoke(self.downloads, ['pfam', '--pfam', '--output',
                                                     self.tmp, self.pfamid])
-        self.assertEqual(result.exit_code, 0)
+            self.assertEqual(result.exit_code, 0)
 
     def test_cli_pdb_pdb_override(self):
         runner = CliRunner()
