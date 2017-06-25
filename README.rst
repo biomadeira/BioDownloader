@@ -44,9 +44,6 @@ Printing help information...
 
    Options:
      --version      Show the version and exit.
-     -v, --verbose  Verbosity level (via logging)
-     --override     Overrides any existing file, if available.
-     --output TEXT  Directory path to which the files will be written.
      -h, --help     Show this message and exit.
 
    Commands:
@@ -73,7 +70,7 @@ Printing help information for one of the available commands...
      --fasta        UniProt sequence in fasta format (expects UniProt ID).
      --gff          UniProt record in gff format (expects UniProt ID).
      --txt          UniProt record in txt format (expects UniProt ID).
-     -v, --verbose  Verbosity level (via logging)
+     -v, --verbosity LVL  Either CRITICAL, ERROR, WARNING, INFO or DEBUG
      --override     Overrides any existing file, if available.
      --output TEXT  Directory path to which the files will be written.
      -h, --help     Show this message and exit.

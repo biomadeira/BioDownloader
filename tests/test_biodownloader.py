@@ -20,6 +20,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from click.testing import CliRunner
+from contextlib import contextmanager
+
 import os
 import re
 import sys
@@ -27,8 +30,6 @@ import json
 import unittest
 import requests
 import responses
-from click.testing import CliRunner
-from contextlib import contextmanager
 
 try:
     from StringIO import StringIO
@@ -39,9 +40,7 @@ try:
 except ImportError:
     from unittest.mock import patch, MagicMock
 
-import biodownloader
-from biodownloader.fetchers import (flash,
-                                    fetch_from_url_or_retry,
+from biodownloader.fetchers import (fetch_from_url_or_retry,
                                     fetch_summary_properties_pdbe,
                                     fetch_preferred_assembly_id,
                                     download_structure_from_pdbe,
@@ -53,6 +52,8 @@ from biodownloader.fetchers import (flash,
 from biodownloader.cli import downloads, file_downloader
 
 from biodownloader.config import config as c
+
+from biodownloader.version import __version__
 
 cwd = os.path.abspath(os.path.dirname(__file__))
 
@@ -120,7 +121,6 @@ class TestBioDownloader(unittest.TestCase):
         self.pdbid = "2pah"
         self.cathid = "1.50.10.100_1318"
         self.pfamid = "PF08124"
-        self.flash = flash
         self.config = c
         self.tmp = c.db_root
         self.fetch_from_url_or_retry = fetch_from_url_or_retry
@@ -141,7 +141,6 @@ class TestBioDownloader(unittest.TestCase):
         self.pdbid = None
         self.cathid = None
         self.pfamid = None
-        self.flash = None
         self.config = None
         self.tmp = None
         self.fetch_from_url_or_retry = None
@@ -155,18 +154,12 @@ class TestBioDownloader(unittest.TestCase):
         self.downloads = None
         self.file_downloader = None
 
-    def test_flash(self):
-        with captured_output() as (out, err):
-            self.flash('Testing the flash method...')
-        output = out.getvalue().strip()
-        self.assertEqual(output, 'Testing the flash method...')
-
     def test_loading_config_defaults(self):
         config = self.config
         self.assertTrue(hasattr(config, 'db_pdbx'))
-        self.assertEqual(config.db_pdbx, "./")
+        self.assertEqual(config.db_pdbx, ".")
         self.assertTrue(hasattr(config, 'db_sifts'))
-        self.assertEqual(config.db_sifts, "./")
+        self.assertEqual(config.db_sifts, ".")
         self.assertFalse(hasattr(config, 'test'))
 
     def test_updating_config_defaults(self):
@@ -274,77 +267,97 @@ class TestBioDownloader(unittest.TestCase):
         self.assertTrue(r.ok)
 
     def test_summary_properties_cached(self):
-        pickled = "{}{}{}_sp.pkl".format(c.db_root, c.db_pickled, self.pdbid)
+        pickled = os.path.join(c.db_root, c.db_pickled, self.pdbid+"_sp.pkl")
         self.assertFalse(os.path.isfile(pickled))
         r = self.fetch_summary_properties_pdbe(self.pdbid, cached=True)
         self.assertTrue(r.ok)
         self.assertTrue(os.path.isfile(pickled))
         os.remove(pickled)
 
-    def test_preferred_assembly_pdbe(self):
+    def test_preferred_assembly_pdbe_1(self):
         r = self.fetch_preferred_assembly_id(self.pdbid)
         self.assertEqual("1", r)
 
-    def test_download_structure_from_pdbe_pdb(self):
+    def test_download_structure_from_pdbe_pdb_1(self):
         self.download_structure_from_pdbe(self.pdbid, pdb=True)
-        os.remove("{}{}{}.pdb".format(c.db_root, c.db_pdbx, self.pdbid))
+        os.remove(os.path.join(c.db_root, c.db_pdbx, self.pdbid+".pdb"))
+
+    def test_download_structure_from_pdbe_pdb_2(self):
         self.file_downloader([self.pdbid], pdb=True)
-        os.remove("{}{}{}.pdb".format(c.db_root, c.db_pdbx, self.pdbid))
+        os.remove(os.path.join(c.db_root, c.db_pdbx, self.pdbid+".pdb"))
 
-    def test_download_structure_from_pdbe_mmcif(self):
+    def test_download_structure_from_pdbe_mmcif_1(self):
         self.download_structure_from_pdbe(self.pdbid, pdb=False)
-        os.remove("{}{}{}.cif".format(c.db_root, c.db_pdbx, self.pdbid))
+        os.remove(os.path.join(c.db_root, c.db_pdbx, self.pdbid+".cif"))
+
+    def test_download_structure_from_pdbe_mmcif_2(self):
         self.file_downloader([self.pdbid], mmcif=True)
-        os.remove("{}{}{}.cif".format(c.db_root, c.db_pdbx, self.pdbid))
+        os.remove(os.path.join(c.db_root, c.db_pdbx, self.pdbid+".cif"))
 
-    def test_download_structure_from_pdbe_mmcif_bio(self):
+    def test_download_structure_from_pdbe_mmcif_bio_1(self):
         self.download_structure_from_pdbe(self.pdbid, pdb=False, bio=True)
-        os.remove("{}{}{}_bio.cif".format(c.db_root, c.db_pdbx, self.pdbid))
+        os.remove(os.path.join(c.db_root, c.db_pdbx, self.pdbid+"_bio.cif"))
+
+    def test_download_structure_from_pdbe_mmcif_bio_2(self):
+        # REM: We are downloading both the mmCIF and assembly!!!
         self.file_downloader([self.pdbid], mmcif=True, bio=True)
-        os.remove("{}{}{}_bio.cif".format(c.db_root, c.db_pdbx, self.pdbid))
+        os.remove(os.path.join(c.db_root, c.db_pdbx, self.pdbid+".cif"))
+        os.remove(os.path.join(c.db_root, c.db_pdbx, self.pdbid+"_bio.cif"))
 
-    def test_download_sifts_from_ebi(self):
+    def test_download_sifts_from_ebi_1(self):
         self.download_sifts_from_ebi(self.pdbid)
-        os.remove("{}{}{}.xml".format(c.db_root, c.db_sifts, self.pdbid))
+        os.remove(os.path.join(c.db_root, c.db_sifts, self.pdbid+".xml"))
+    
+    def test_download_sifts_from_ebi_2(self):
         self.file_downloader([self.pdbid], sifts=True)
-        os.remove("{}{}{}.xml".format(c.db_root, c.db_sifts, self.pdbid))
+        os.remove(os.path.join(c.db_root, c.db_sifts, self.pdbid+".xml"))
 
-    def test_download_data_from_uniprot_fasta(self):
+    def test_download_data_from_uniprot_fasta_1(self):
         self.download_data_from_uniprot(self.uniprotid, file_format="fasta")
-        os.remove("{}{}{}.fasta".format(c.db_root, c.db_uniprot, self.uniprotid))
+        os.remove(os.path.join(c.db_root, c.db_uniprot, self.uniprotid+".fasta"))
+    
+    def test_download_data_from_uniprot_fasta_2(self):
         self.file_downloader([self.uniprotid], fasta=True)
-        os.remove("{}{}{}.fasta".format(c.db_root, c.db_uniprot, self.uniprotid))
+        os.remove(os.path.join(c.db_root, c.db_uniprot, self.uniprotid+".fasta"))
 
-    def test_download_data_from_uniprot_gff(self):
+    def test_download_data_from_uniprot_gff_1(self):
         self.download_data_from_uniprot(self.uniprotid, file_format="gff")
-        os.remove("{}{}{}.gff".format(c.db_root, c.db_uniprot, self.uniprotid))
+        os.remove(os.path.join(c.db_root, c.db_uniprot, self.uniprotid+".gff"))
+    
+    def test_download_data_from_uniprot_gff_2(self):
         self.file_downloader([self.uniprotid], gff=True)
-        os.remove("{}{}{}.gff".format(c.db_root, c.db_uniprot, self.uniprotid))
+        os.remove(os.path.join(c.db_root, c.db_uniprot, self.uniprotid+".gff"))
 
-    def test_download_data_from_uniprot_txt(self):
+    def test_download_data_from_uniprot_txt_1(self):
         self.download_data_from_uniprot(self.uniprotid, file_format="txt")
-        os.remove("{}{}{}.txt".format(c.db_root, c.db_uniprot, self.uniprotid))
+        os.remove(os.path.join(c.db_root, c.db_uniprot, self.uniprotid+".txt"))
+    
+    def test_download_data_from_uniprot_txt_2(self):
         self.file_downloader([self.uniprotid], txt=True)
-        os.remove("{}{}{}.txt".format(c.db_root, c.db_uniprot, self.uniprotid))
+        os.remove(os.path.join(c.db_root, c.db_uniprot, self.uniprotid+".txt"))
 
-    def test_download_alignment_from_cath(self):
+    def test_download_alignment_from_cath_1(self):
         self.download_alignment_from_cath(self.cathid)
-        os.remove("{}{}{}.fasta".format(c.db_root, c.db_cath, self.cathid))
-        self.file_downloader([self.cathid], cath=True)
-        os.remove("{}{}{}.fasta".format(c.db_root, c.db_cath, self.cathid))
+        os.remove(os.path.join(c.db_root, c.db_cath, self.cathid+".fasta"))
 
-    def test_download_alignment_from_pfam(self):
+    def test_download_alignment_from_cath_2(self):
+        self.file_downloader([self.cathid], cath=True)
+        os.remove(os.path.join(c.db_root, c.db_cath, self.cathid+".fasta"))
+
+    def test_download_alignment_from_pfam_1(self):
         self.download_alignment_from_pfam(self.pfamid)
-        os.remove("{}{}{}.sth".format(c.db_root, c.db_pfam, self.pfamid))
+        os.remove(os.path.join(c.db_root, c.db_pfam, self.pfamid+".sth"))
+    
+    def test_download_alignment_from_pfam_2(self):
         self.file_downloader([self.pfamid], pfam=True)
-        os.remove("{}{}{}.sth".format(c.db_root, c.db_pfam, self.pfamid))
+        os.remove(os.path.join(c.db_root, c.db_pfam, self.pfamid+".sth"))
 
     def test_cli_version(self):
         runner = CliRunner()
         result = runner.invoke(self.downloads, ['--version'])
         self.assertEqual(result.exit_code, 0)
         self.assertEqual("downloads, version {}\n"
-                         "".format(biodownloader.__version__), result.output)
+                         "".format(__version__), result.output)
 
     def test_cli_help(self):
         runner = CliRunner()

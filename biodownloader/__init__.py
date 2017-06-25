@@ -25,7 +25,8 @@ __author__ = "Fábio Madeira"
 __copyright__ = "Copyright 2017, Fábio Madeira"
 __credits__ = ["Fábio Madeira"]
 __license__ = "GNU GPLv3"
-__version__ = "0.1.0"
+import biodownloader.version
+__version__ = biodownloader.version.__version__
 __maintainer__ = "Fábio Madeira"
 __email__ = "fabiomadeira@me.com"
 __status__ = "beta"

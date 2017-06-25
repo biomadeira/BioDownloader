@@ -20,25 +20,19 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import os
-import sys
 import gzip
-import time
-import shutil
-import urllib
+import logging
+import os
 import pickle
 import requests
+import shutil
+import time
+import urllib
 
 from biodownloader.config import config
 
-
-def flash(message):
-    """
-    Flashes a message out.
-    :param message: input message str()
-    """
-    print(str(message))
-    sys.stdout.flush()
+# REM: Name needs to match that set in cli!!!
+logger = logging.getLogger("biodownloader")
 
 
 def fetch_from_url_or_retry(url, json=True, header=None, post=False, data=None,
@@ -77,7 +71,8 @@ def fetch_from_url_or_retry(url, json=True, header=None, post=False, data=None,
     else:
         if "Content-Type" not in header:
             header.update({"Content-Type": "text/plain"})
-
+    
+    logger.debug("Querying %s ...", url)
     if post:
         if data is not None:
             assert type(data) is dict or type(data) is str
@@ -99,7 +94,7 @@ def fetch_from_url_or_retry(url, json=True, header=None, post=False, data=None,
         except requests.exceptions.HTTPError as e:
             message = '{}: Unable to retrieve {} for {}'.format(response.status_code,
                                                                 url, str(e))
-            flash(message)
+            logger.critical(message)
 
 
 def fetch_summary_properties_pdbe(identifier, cached=False, retry_in=(429,)):
@@ -111,8 +106,7 @@ def fetch_summary_properties_pdbe(identifier, cached=False, retry_in=(429,)):
     :param retry_in: http code for retrying connections
     :return: response object
     """
-
-    pickled = "{}{}{}_sp.pkl".format(config.db_root, config.db_pickled, identifier)
+    pickled = os.path.join(config.db_root, config.db_pickled, identifier+"_sp.pkl")
     if cached and os.path.isfile(pickled):
         response = pickle.load(open(pickled, 'rb'))
     else:
@@ -139,7 +133,7 @@ def fetch_preferred_assembly_id(identifier):
         data = fetch_summary_properties_pdbe(identifier)
     except Exception as e:
         message = "Something went wrong for {}... {}".format(identifier, e)
-        flash(message)
+        logger.critical(message)
     try:
         if data is not None:
             data = data.json()
@@ -154,7 +148,7 @@ def fetch_preferred_assembly_id(identifier):
     except Exception as e:
         pref_assembly = "1"
         message = "Something went wrong for {}... {}".format(identifier, e)
-        flash(message)
+        logger.critical(message)
 
     bio_best = str(pref_assembly)
     return bio_best
@@ -179,8 +173,8 @@ def download_structure_from_pdbe(identifier, pdb=False, bio=False, override=Fals
         else:
             filename = "{}.cif".format(identifier)
 
-    outputfile = "{}{}{}".format(config.db_root, config.db_pdbx, filename)
-    os.makedirs("{}{}".format(config.db_root, config.db_pdbx), exist_ok=True)
+    outputfile = os.path.join(config.db_root, config.db_pdbx, filename)
+    os.makedirs(os.path.join(config.db_root, config.db_pdbx), exist_ok=True)
     if not os.path.exists(outputfile.rstrip('.gz')) or override:
         if pdb:
             url = config.http_pdbe + ("entry-files/download/"
@@ -209,6 +203,8 @@ def download_structure_from_pdbe(identifier, pdb=False, bio=False, override=Fals
                         open(outputfile.replace('.gz', ''), 'wb') as outfile:
                     shutil.copyfileobj(infile, outfile)
                     os.remove(outputfile)
+    else:
+        logger.debug("File %s exists ... skipping", outputfile.rstrip('.gz')) 
     return
 
 
@@ -223,8 +219,8 @@ def download_sifts_from_ebi(identifier, override=False):
 
     filename = "{}.xml.gz".format(identifier)
 
-    outputfile = "{}{}{}".format(config.db_root, config.db_sifts, filename)
-    os.makedirs("{}{}".format(config.db_root, config.db_sifts), exist_ok=True)
+    outputfile = os.path.join(config.db_root, config.db_sifts, filename)
+    os.makedirs(os.path.join(config.db_root, config.db_sifts), exist_ok=True)
     if not os.path.exists(outputfile.rstrip('.gz')) or override:
 
         url = config.ftp_sifts + "{}.xml.gz".format(identifier)
@@ -235,13 +231,15 @@ def download_sifts_from_ebi(identifier, override=False):
             urllib.request.urlretrieve(url, outputfile)
         except IOError as e:
             message = 'Unable to retrieve {} for {}'.format(url, str(e))
-            flash(message)
+            logger.critical(message)
 
         if filename.endswith('.gz'):
             with gzip.open(outputfile, 'rb') as infile, \
                     open(outputfile.replace('.gz', ''), 'wb') as outfile:
                 shutil.copyfileobj(infile, outfile)
                 os.remove(outputfile)
+    else:
+        logger.debug("File %s exists ... skipping", outputfile.rstrip('.gz')) 
     return
 
 
@@ -259,8 +257,8 @@ def download_data_from_uniprot(identifier, file_format="fasta", override=False):
     if file_format in ['txt', 'fasta', 'gff']:
         filename = "{}.{}".format(identifier, file_format)
 
-        outputfile = "{}{}{}".format(config.db_root, config.db_uniprot, filename)
-        os.makedirs("{}{}".format(config.db_root, config.db_uniprot), exist_ok=True)
+        outputfile = os.path.join(config.db_root, config.db_uniprot, filename)
+        os.makedirs(os.path.join(config.db_root, config.db_uniprot), exist_ok=True)
         if not os.path.exists(outputfile) or override:
 
             url = config.http_uniprot + "{}.{}".format(identifier, file_format)
@@ -269,6 +267,8 @@ def download_data_from_uniprot(identifier, file_format="fasta", override=False):
                 with open(outputfile, 'wb') as f:
                     r.raw.decode_content = True
                     shutil.copyfileobj(r.raw, f)
+        else:
+            logger.debug("File %s exists ... skipping", outputfile.rstrip('.gz')) 
     else:
         raise ValueError("File format {} is not currently implemented..."
                          "".format(file_format))
@@ -288,8 +288,8 @@ def download_alignment_from_cath(identifier, max_sequences=200, override=False):
     if '_' in identifier:
         filename = "{}.fasta".format(identifier)
         superfamily, funfam = identifier.split('_')[0], identifier.split('_')[1]
-        outputfile = "{}{}{}".format(config.db_root, config.db_cath, filename)
-        os.makedirs("{}{}".format(config.db_root, config.db_cath), exist_ok=True)
+        outputfile = os.path.join(config.db_root, config.db_cath, filename)
+        os.makedirs(os.path.join(config.db_root, config.db_cath), exist_ok=True)
         if not os.path.exists(outputfile) or override:
 
             url = config.http_cath + "superfamily/{}/funfam/{}/" \
@@ -301,6 +301,8 @@ def download_alignment_from_cath(identifier, max_sequences=200, override=False):
                 with open(outputfile, 'wb') as f:
                     r.raw.decode_content = True
                     shutil.copyfileobj(r.raw, f)
+        else:
+            logger.debug("File %s exists ... skipping", outputfile.rstrip('.gz')) 
     else:
         raise ValueError("Expected CATH  ID but got {}..."
                          "".format(identifier))
@@ -320,8 +322,8 @@ def download_alignment_from_pfam(identifier, alignment_size="seed",
 
     filename = "{}.sth".format(identifier)
 
-    outputfile = "{}{}{}".format(config.db_root, config.db_pfam, filename)
-    os.makedirs("{}{}".format(config.db_root, config.db_pfam), exist_ok=True)
+    outputfile = os.path.join(config.db_root, config.db_cath, filename)
+    os.makedirs(os.path.join(config.db_root, config.db_cath), exist_ok=True)
     if not os.path.exists(outputfile) or override:
 
         url = config.http_pfam + "family/{}/alignment/{}".format(identifier,
@@ -331,6 +333,8 @@ def download_alignment_from_pfam(identifier, alignment_size="seed",
             with open(outputfile, 'wb') as f:
                 r.raw.decode_content = True
                 shutil.copyfileobj(r.raw, f)
+    else:
+        logger.debug("File %s exists ... skipping", outputfile.rstrip('.gz')) 
     return
 
 

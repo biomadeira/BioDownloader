@@ -28,6 +28,14 @@ __author__ = 'Fábio Madeira'
 __email__ = 'fabiomadeira@me.com'
 __version__ = '0.1.0'
 
+def gather_dependencies():
+    import os
+    with open('requirements.txt', 'r') as f_in:
+        return [l for l in f_in.read().rsplit(os.linesep) 
+                if l and not l.startswith("#")]
+DEPENDENCIES = gather_dependencies()
+
+
 setup(
     # Basic package information.
     name='biodownloader',
@@ -39,12 +47,7 @@ setup(
 
     # Package dependencies
     # should always match the entries in requirements.txt
-    install_requires=[
-        "requests",
-        "responses",
-        "click",
-        "mock",
-    ],
+    install_requires=DEPENDENCIES,
 
     entry_points={
         "console_scripts": [
@@ -54,6 +57,7 @@ setup(
 
     # tests
     test_suite="tests.test_biodownloader",
+    tests_require=['mock'],
 
     # Metadata for PyPI.
     author=__author__,
@@ -77,6 +81,6 @@ setup(
         'Topic :: Internet',
         'Topic :: Scientific/Engineering :: Bio-informatics',
         'Topic :: Software Development :: Libraries :: Python Modules',
-    ]
+    ],
 )
 
