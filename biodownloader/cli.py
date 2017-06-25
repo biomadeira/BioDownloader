@@ -21,20 +21,14 @@
 """
 
 import click
+import logging
 
-import biodownloader
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-from biodownloader.fetchers import download_structure_from_pdbe
-from biodownloader.fetchers import download_sifts_from_ebi
-from biodownloader.fetchers import download_data_from_uniprot
-from biodownloader.fetchers import download_alignment_from_cath
-from biodownloader.fetchers import download_alignment_from_pfam
-
-from biodownloader.config import config
+import biodownloader.version
 
 # TODO variants in vcf, json, etc.
-# TODO add logging
-
 
 # https://github.com/pallets/click/issues/108
 def add_common(options):
@@ -64,7 +58,7 @@ common_arguments = [
 # main application
 @click.group(chain=True,
              context_settings={'help_option_names': ['-h', '--help']})
-@click.version_option(version=biodownloader.__version__)
+@click.version_option(version=biodownloader.version.__version__)
 @add_common(common_options)
 def downloads(**kwargs):
     """
@@ -192,35 +186,48 @@ def file_downloader(ids, pdb=False, mmcif=False, bio=False, sifts=False,
                     fasta=False, gff=False, txt=False, cath=False, pfam=False,
                     override=False, output_dir=None, verbose=1):
 
+    # Modify config if necessary
     if output_dir is not None:
+        from biodownloader.config import config
         config.db_root = output_dir
+    
+    # Download relevant information
     for pid in ids:
 
         if pdb:
+            from biodownloader.fetchers import download_structure_from_pdbe
             download_structure_from_pdbe(pid, pdb=True,
                                          override=override)
         if mmcif:
+            from biodownloader.fetchers import download_structure_from_pdbe
             download_structure_from_pdbe(pid, pdb=False, bio=False,
                                          override=override)
         if bio:
+            from biodownloader.fetchers import download_structure_from_pdbe
             download_structure_from_pdbe(pid, pdb=False, bio=True,
                                          override=override)
         if sifts:
+            from biodownloader.fetchers import download_sifts_from_ebi
             download_sifts_from_ebi(pid, override=override)
 
         if fasta:
+            from biodownloader.fetchers import download_data_from_uniprot
             download_data_from_uniprot(pid, file_format="fasta",
                                        override=override)
         if gff:
+            from biodownloader.fetchers import download_data_from_uniprot
             download_data_from_uniprot(pid, file_format="gff",
                                        override=override)
         if txt:
+            from biodownloader.fetchers import download_data_from_uniprot
             download_data_from_uniprot(pid, file_format="txt",
                                        override=override)
         if cath:
+            from biodownloader.fetchers import download_alignment_from_cath
             download_alignment_from_cath(pid, max_sequences=20000,
                                          override=override)
         if pfam:
+            from biodownloader.fetchers import download_alignment_from_pfam
             download_alignment_from_pfam(pid, override=override)
 
 
