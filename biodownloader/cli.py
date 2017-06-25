@@ -21,10 +21,9 @@
 """
 
 import click
+import click_log
 import logging
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("biodownloader")
 
 import biodownloader.version
 
@@ -40,8 +39,6 @@ def add_common(options):
 
 
 common_options = [
-    click.option('--verbose', '-v', 'verbose', flag_value=2, default=1,
-                 help="Verbosity level (via logging)"),
     click.option('--override', 'override',
                  multiple=False, help='Overrides any existing file, if available.',
                  default=False, is_flag=True, required=False),
@@ -59,7 +56,7 @@ common_arguments = [
 @click.group(chain=True,
              context_settings={'help_option_names': ['-h', '--help']})
 @click.version_option(version=biodownloader.version.__version__)
-@add_common(common_options)
+@click_log.init("biodownloader")
 def downloads(**kwargs):
     """
     BioDownloader: a Command Line Tool for downloading protein
@@ -81,10 +78,11 @@ def downloads(**kwargs):
               help=('Preferred BioUnit instead of the asymmetric unit. '
                     'This option only works paired with --mmcif'),
               default=False, is_flag=True, required=False)
+@click_log.simple_verbosity_option()
 @add_common(common_options)
 @add_common(common_arguments)
 def pdb(ids, pdb=False, mmcif=False, bio=False,
-        override=False, output_dir=None, verbose=1):
+        override=False, output_dir=None):
     """
     Macromolecular structures from the PDBe.
 
@@ -93,17 +91,17 @@ def pdb(ids, pdb=False, mmcif=False, bio=False,
 
     file_downloader(ids, pdb=pdb, mmcif=mmcif, bio=bio, sifts=False,
                     fasta=False, gff=False, txt=False, cath=False, pfam=False,
-                    override=override, output_dir=output_dir, verbose=verbose)
+                    override=override, output_dir=output_dir)
 
 
 @downloads.command('sifts')
 @click.option('--sifts', 'sifts', multiple=False,
               help='SIFTS xml format (expects PDB ID).',
               default=False, is_flag=True, required=False)
+@click_log.simple_verbosity_option()
 @add_common(common_options)
 @add_common(common_arguments)
-def sifts(ids, sifts=False,
-          override=False, output_dir=None, verbose=1):
+def sifts(ids, sifts=False, override=False, output_dir=None):
     """
     SIFTS xml structure-sequence mappings from the EBI.
 
@@ -112,7 +110,7 @@ def sifts(ids, sifts=False,
 
     file_downloader(ids, pdb=False, mmcif=False, bio=False, sifts=sifts,
                     fasta=False, gff=False, txt=False, cath=False, pfam=False,
-                    override=override, output_dir=output_dir, verbose=verbose)
+                    override=override, output_dir=output_dir)
 
 
 @downloads.command('uniprot')
@@ -125,10 +123,11 @@ def sifts(ids, sifts=False,
 @click.option('--txt', 'txt', multiple=False,
               help='UniProt record in txt format (expects UniProt ID).',
               default=False, is_flag=True, required=False)
+@click_log.simple_verbosity_option()
 @add_common(common_options)
 @add_common(common_arguments)
 def uniprot(ids, fasta=False, gff=False, txt=False,
-            override=False, output_dir=None, verbose=1):
+            override=False, output_dir=None):
     """
     Sequences (fasta) and sequence annotations in SwissProt (txt) or
     GFF (gff) format from the UniProt.
@@ -138,18 +137,18 @@ def uniprot(ids, fasta=False, gff=False, txt=False,
 
     file_downloader(ids, pdb=False, mmcif=False, bio=False, sifts=False,
                     fasta=fasta, gff=gff, txt=txt, cath=False, pfam=False,
-                    override=override, output_dir=output_dir, verbose=verbose)
+                    override=override, output_dir=output_dir)
 
 
 @downloads.command('cath')
+@click_log.simple_verbosity_option()
+@add_common(common_options)
+@add_common(common_arguments)
 @click.option('--cath', 'cath', multiple=False,
               help=('CATH Funfam alignment in fasta format '
                     '(expects a CATH <Superfamily>_<Funfam> ID).'),
               default=False, is_flag=True, required=False)
-@add_common(common_options)
-@add_common(common_arguments)
-def cath(ids, cath=False,
-         override=False, output_dir=None, verbose=1):
+def cath(ids, cath=False, override=False, output_dir=None):
     """
     Multiple sequence alignments (fasta) from CATH.
 
@@ -158,18 +157,18 @@ def cath(ids, cath=False,
 
     file_downloader(ids, pdb=False, mmcif=False, bio=False, sifts=False,
                     fasta=False, gff=False, txt=False, cath=cath, pfam=False,
-                    override=override, output_dir=output_dir, verbose=verbose)
+                    override=override, output_dir=output_dir)
 
 
 @downloads.command('pfam')
+@click_log.simple_verbosity_option()
+@add_common(common_options)
+@add_common(common_arguments)
 @click.option('--pfam', 'pfam', multiple=False,
               help=('Pfam alignment in Stockholm format '
                     '(expects a Pfam ID).'),
               default=False, is_flag=True, required=False)
-@add_common(common_options)
-@add_common(common_arguments)
-def pfam(ids, pfam=False,
-         override=False, output_dir=None, verbose=1):
+def pfam(ids, pfam=False, override=False, output_dir=None):
     """
     Multiple sequence alignments (fasta) from Pfam.
 
@@ -178,14 +177,14 @@ def pfam(ids, pfam=False,
 
     file_downloader(ids, pdb=False, mmcif=False, bio=False, sifts=False,
                     fasta=False, gff=False, txt=False, cath=False, pfam=pfam,
-                    override=override, output_dir=output_dir, verbose=verbose)
+                    override=override, output_dir=output_dir)
 
 
 # FIXME add verbosity (via logging)
 def file_downloader(ids, pdb=False, mmcif=False, bio=False, sifts=False,
                     fasta=False, gff=False, txt=False, cath=False, pfam=False,
-                    override=False, output_dir=None, verbose=1):
-
+                    override=False, output_dir=None):
+    
     # Modify config if necessary
     if output_dir is not None:
         from biodownloader.config import config

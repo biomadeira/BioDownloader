@@ -23,19 +23,19 @@
 config_defaults = dict()
 
 # Absolute path working dir
-config_defaults["db_root"] = "./"
+config_defaults["db_root"] = "."
 # PDBx/mmCIF files
-config_defaults["db_pdbx"] = "./"
+config_defaults["db_pdbx"] = "."
 # SIFTS xml files
-config_defaults["db_sifts"] = "./"
+config_defaults["db_sifts"] = "."
 # UniProt dir
-config_defaults["db_uniprot"] = "./"
+config_defaults["db_uniprot"] = "."
 # CATH dir
-config_defaults["db_cath"] = "./"
+config_defaults["db_cath"] = "."
 # Pfam dir
-config_defaults["db_pfam"] = "./"
+config_defaults["db_pfam"] = "."
 # Pickled objects
-config_defaults["db_pickled"] = "./"
+config_defaults["db_pickled"] = "."
 
 # PDBe REST API
 config_defaults["api_pdbe"] = "http://www.ebi.ac.uk/pdbe/api/"

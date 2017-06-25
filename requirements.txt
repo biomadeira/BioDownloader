@@ -20,4 +20,4 @@
 requests
 responses
 click
-mock
+click_log
