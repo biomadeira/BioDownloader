@@ -1,7 +1,7 @@
 BioDownloader
 =============
 
-|Build Status| |Coverage Status| |License| |Twitter: @biomadeira|
+|Build Status| |Coverage Status| |License|
 
 A Command Line Tool for downloading protein structures, protein sequences
 and multiple sequence alignments.
@@ -106,6 +106,11 @@ Contributing and Bug tracking
 Feel free to fork, clone, share and distribute. If you find any bugs or
 issues please log them in the `issue tracker`_.
 
+Contributors:  
+ - `Fábio Madeira`_
+ - `Felix Simkovic`_
+
+
 License
 ~~~~~~~
 
@@ -114,6 +119,8 @@ GNU General Public License v3 (GPLv3). See `license`_ for details.
 .. _requirements: https://github.com/biomadeira/BioDownloader/blob/master/requirements.txt
 .. _issue tracker: https://github.com/biomadeira/BioDownloader/issues
 .. _license: https://github.com/biomadeira/BioDownloader/blob/master/LICENSE.md
+.. _Fábio Madeira: https://github.com/biomadeira
+.. _Felix Simkovic: https://github.com/fsimkovic
 
 .. |Build Status| image:: https://secure.travis-ci.org/biomadeira/BioDownloader.png?branch=master
    :target: http://travis-ci.org/biomadeira/BioDownloader
@@ -121,7 +128,5 @@ GNU General Public License v3 (GPLv3). See `license`_ for details.
    :target: https://coveralls.io/github/biomadeira/BioDownloader?branch=master
 .. |License| image:: http://img.shields.io/badge/license-GPLv3-brightgreen.svg?style=flat
    :target: https://github.com/biomadeira/BioDownloader/blob/master/LICENSE.md
-.. |Twitter: @biomadeira| image:: https://img.shields.io/badge/contact-@biomadeira-blue.svg?style=flat
-   :target: https://twitter.com/biomadeira
 .. |Python: versions| image:: https://img.shields.io/badge/python-3.4,_3.5,_3.6-blue.svg?style=flat
    :target: http://travis-ci.org/biomadeira/BioDownloader
