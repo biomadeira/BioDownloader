@@ -1,7 +1,7 @@
 BioDownloader
 =============
 
-|Build Status| |Coverage Status| |License|
+|Build Status| |Coverage Status| |Health| |Python: versions| |License|
 
 A Command Line Tool for downloading protein structures, protein sequences
 and multiple sequence alignments.
@@ -96,8 +96,6 @@ Changing where the files will be downloaded to...
 Dependencies
 ~~~~~~~~~~~~
 
-|Python: versions|
-
 See the necessary `requirements`_ for this module.
 
 Contributing and Bug tracking
@@ -106,7 +104,10 @@ Contributing and Bug tracking
 Feel free to fork, clone, share and distribute. If you find any bugs or
 issues please log them in the `issue tracker`_.
 
-Contributors:  
+
+Contributors
+~~~~~~~~~~~~
+
  - `Fábio Madeira`_
  - `Felix Simkovic`_
 
@@ -130,3 +131,5 @@ GNU General Public License v3 (GPLv3). See `license`_ for details.
    :target: https://github.com/biomadeira/BioDownloader/blob/master/LICENSE.md
 .. |Python: versions| image:: https://img.shields.io/badge/python-3.4,_3.5,_3.6-blue.svg?style=flat
    :target: http://travis-ci.org/biomadeira/BioDownloader
+.. |Health| image:: https://landscape.io/github/biomadeira/BioDownloader/master/landscape.svg?style=flat
+   :target: https://landscape.io/github/biomadeira/BioDownloader/master
