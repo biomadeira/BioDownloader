@@ -20,16 +20,15 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from click.testing import CliRunner
-from contextlib import contextmanager
-
 import os
 import re
 import sys
 import json
+import logging
 import unittest
 import requests
 import responses
+from click.testing import CliRunner
 
 try:
     from StringIO import StringIO
@@ -42,7 +41,7 @@ except ImportError:
 
 from biodownloader.fetchers import (fetch_from_url_or_retry,
                                     fetch_summary_properties_pdbe,
-                                    fetch_preferred_assembly_id,
+                                    get_preferred_assembly_id,
                                     download_structure_from_pdbe,
                                     download_sifts_from_ebi,
                                     download_data_from_uniprot,
@@ -56,17 +55,6 @@ from biodownloader.config import config as c
 from biodownloader.version import __version__
 
 cwd = os.path.abspath(os.path.dirname(__file__))
-
-
-@contextmanager
-def captured_output():
-    new_out, new_err = StringIO(), StringIO()
-    old_out, old_err = sys.stdout, sys.stderr
-    try:
-        sys.stdout, sys.stderr = new_out, new_err
-        yield sys.stdout, sys.stderr
-    finally:
-        sys.stdout, sys.stderr = old_out, old_err
 
 
 def response_mocker(kwargs, base_url, endpoint_url, status=200,
@@ -107,9 +95,7 @@ def response_mocker(kwargs, base_url, endpoint_url, status=200,
 class TestBioDownloader(unittest.TestCase):
     """
 
-    This suit doesn't check the data fetched because it will change overtime.
-    That is tested in the main fetching method implemented in test_utils.py!
-
+    This suit doesn't generally check the data fetched because it will change overtime.
     Here, we only test whether the endpoints still exist or not!
 
     """
@@ -125,7 +111,7 @@ class TestBioDownloader(unittest.TestCase):
         self.tmp = c.db_root
         self.fetch_from_url_or_retry = fetch_from_url_or_retry
         self.fetch_summary_properties_pdbe = fetch_summary_properties_pdbe
-        self.fetch_preferred_assembly_id = fetch_preferred_assembly_id
+        self.get_preferred_assembly_id = get_preferred_assembly_id
         self.download_structure_from_pdbe = download_structure_from_pdbe
         self.download_sifts_from_ebi = download_sifts_from_ebi
         self.download_data_from_uniprot = download_data_from_uniprot
@@ -145,7 +131,7 @@ class TestBioDownloader(unittest.TestCase):
         self.tmp = None
         self.fetch_from_url_or_retry = None
         self.fetch_summary_properties_pdbe = None
-        self.fetch_preferred_assembly_id = None
+        self.get_preferred_assembly_id = None
         self.download_structure_from_pdbe = None
         self.download_sifts_from_ebi = None
         self.download_data_from_uniprot = None
@@ -275,7 +261,7 @@ class TestBioDownloader(unittest.TestCase):
         os.remove(pickled)
 
     def test_preferred_assembly_pdbe_1(self):
-        r = self.fetch_preferred_assembly_id(self.pdbid)
+        r = self.get_preferred_assembly_id(self.pdbid)
         self.assertEqual("1", r)
 
     def test_download_structure_from_pdbe_pdb_1(self):
@@ -438,5 +424,7 @@ class TestBioDownloader(unittest.TestCase):
             self.assertEqual(result.exit_code, 0)
 
 if __name__ == '__main__':
+    logging.basicConfig(stream=sys.stderr)
+    logging.getLogger("biodownloader").setLevel(logging.DEBUG)
     suite = unittest.TestLoader().loadTestsFromTestCase(TestBioDownloader)
     unittest.TextTestRunner(verbosity=2).run(suite)

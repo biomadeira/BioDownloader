@@ -71,7 +71,7 @@ def fetch_from_url_or_retry(url, json=True, header=None, post=False, data=None,
     else:
         if "Content-Type" not in header:
             header.update({"Content-Type": "text/plain"})
-    
+
     logger.debug("Querying %s ...", url)
     if post:
         if data is not None:
@@ -99,7 +99,7 @@ def fetch_from_url_or_retry(url, json=True, header=None, post=False, data=None,
 
 def fetch_summary_properties_pdbe(identifier, cached=False, retry_in=(429,)):
     """
-    Queries the PDBe API to get summary validation report.
+    Queries the PDBe API to get summary properties.
 
     :param identifier: PDB ID
     :param cached: (boolean) if True, stores a json file locally
@@ -119,7 +119,7 @@ def fetch_summary_properties_pdbe(identifier, cached=False, retry_in=(429,)):
     return response
 
 
-def fetch_preferred_assembly_id(identifier):
+def get_preferred_assembly_id(identifier):
     """
     Gets the preferred assembly id for the given PDB ID, from the PDBe API.
 
