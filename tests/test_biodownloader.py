@@ -175,8 +175,8 @@ class TestBioDownloader(unittest.TestCase):
     def test_fetch_from_url_or_retry_get_json(self):
         # mocked requests
         identifier = "2pah"
-        base_url = c.api_pdbe
-        endpoint_url = "pdb/entry/summary/"
+        base_url = c.http_pdbe
+        endpoint_url = "api/pdb/entry/summary/"
         response = response_mocker(kwargs={identifier}, base_url=base_url,
                                    endpoint_url=endpoint_url,
                                    content_type='application/json')
@@ -205,8 +205,8 @@ class TestBioDownloader(unittest.TestCase):
     def test_fetch_from_url_or_retry_post_json(self):
         # mocked requests
         identifier = "1csb, 2pah"
-        base_url = c.api_pdbe
-        endpoint_url = "pdb/entry/summary/"
+        base_url = c.http_pdbe
+        endpoint_url = "api/pdb/entry/summary/"
         response = response_mocker(kwargs={}, base_url=base_url,
                                    endpoint_url=endpoint_url,
                                    content_type='application/octet-stream',

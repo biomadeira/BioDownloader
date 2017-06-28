@@ -37,8 +37,6 @@ config_defaults["db_pfam"] = "."
 # Pickled objects
 config_defaults["db_pickled"] = "."
 
-# PDBe REST API
-config_defaults["api_pdbe"] = "http://www.ebi.ac.uk/pdbe/api/"
 # UniProt HTTP
 config_defaults["http_uniprot"] = "http://www.uniprot.org/uniprot/"
 # PDBe HTTP

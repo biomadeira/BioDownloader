@@ -133,8 +133,8 @@ def fetch_summary_properties_pdbe(identifier, cached=False, retry_in=(429,)):
     :return: response object
     """
 
-    url_root = config.api_pdbe
-    url_enpoint = "pdb/entry/summary/"
+    url_root = config.http_pdbe
+    url_enpoint = "api/pdb/entry/summary/"
     url = url_root + url_enpoint + identifier
     b = Fetcher(url=url, cached=cached,
                 cache_output="{}_sp.pkl".format(identifier),
