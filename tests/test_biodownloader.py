@@ -22,7 +22,6 @@
 
 import os
 import re
-import sys
 import json
 import logging
 import unittest
@@ -120,6 +119,8 @@ class TestBioDownloader(unittest.TestCase):
         self.downloads = downloads
         self.file_downloader = file_downloader
 
+        logging.disable(logging.CRITICAL)
+
     def tearDown(self):
         """Remove testing framework."""
 
@@ -139,6 +140,8 @@ class TestBioDownloader(unittest.TestCase):
         self.download_alignment_from_pfam = None
         self.downloads = None
         self.file_downloader = None
+
+        logging.disable(logging.NOTSET)
 
     def test_loading_config_defaults(self):
         config = self.config
@@ -424,7 +427,5 @@ class TestBioDownloader(unittest.TestCase):
             self.assertEqual(result.exit_code, 0)
 
 if __name__ == '__main__':
-    logging.basicConfig(stream=sys.stderr)
-    logging.getLogger("biodownloader").setLevel(logging.DEBUG)
     suite = unittest.TestLoader().loadTestsFromTestCase(TestBioDownloader)
     unittest.TextTestRunner(verbosity=2).run(suite)

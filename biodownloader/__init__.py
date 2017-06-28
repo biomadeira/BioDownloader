@@ -20,6 +20,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import sys
+import logging
+
+logging.getLogger("biodownloader").addHandler(logging.NullHandler())
+logging.captureWarnings(True)
+logging.basicConfig(stream=sys.stderr, level=logging.INFO,
+                    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
+
 
 __author__ = "Fábio Madeira"
 __copyright__ = "Copyright 2017, Fábio Madeira"
