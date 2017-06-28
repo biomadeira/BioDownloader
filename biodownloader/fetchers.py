@@ -30,7 +30,6 @@ import requests
 
 from biodownloader.config import config
 
-# REM: Name needs to match that set in cli!!!
 logger = logging.getLogger("biodownloader")
 
 

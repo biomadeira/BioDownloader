@@ -23,11 +23,11 @@
 import click
 import click_log
 import logging
+
 logger = logging.getLogger("biodownloader")
 
 import biodownloader.version
 
-# TODO variants in vcf, json, etc.
 
 # https://github.com/pallets/click/issues/108
 def add_common(options):
@@ -57,7 +57,7 @@ common_arguments = [
              context_settings={'help_option_names': ['-h', '--help']})
 @click.version_option(version=biodownloader.version.__version__)
 @click_log.init("biodownloader")
-def downloads(**kwargs):
+def downloads():
     """
     BioDownloader: a Command Line Tool for downloading protein
     structures, protein sequences and multiple sequence alignments.
@@ -180,7 +180,6 @@ def pfam(ids, pfam=False, override=False, output_dir=None):
                     override=override, output_dir=output_dir)
 
 
-# FIXME add verbosity (via logging)
 def file_downloader(ids, pdb=False, mmcif=False, bio=False, sifts=False,
                     fasta=False, gff=False, txt=False, cath=False, pfam=False,
                     override=False, output_dir=None):
