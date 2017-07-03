@@ -196,11 +196,10 @@ class Downloader(object):
 
         if not os.path.exists(self.outputfile) or self.override:
             self._download()
+            if self.outputfile_origin.endswith('.gz') and self.decompress:
+                self._decompress()
         else:
             logger.info("%s already available...", self.outputfile)
-
-        if self.outputfile_origin.endswith('.gz') and self.decompress:
-            self._decompress()
 
     def _download(self):
         try:
