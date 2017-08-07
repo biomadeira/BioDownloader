@@ -256,7 +256,7 @@ class TestBioDownloader(unittest.TestCase):
         self.assertTrue(r.ok)
 
     def test_summary_properties_cached(self):
-        pickled = os.path.join(c.db_root, c.db_pickled, self.pdbid+"_sp.pkl")
+        pickled = os.path.join(c.db_root, c.db_pickled, self.pdbid + "_sp.pkl")
         self.assertFalse(os.path.isfile(pickled))
         r = self.fetch_summary_properties_pdbe(self.pdbid, cached=True)
         self.assertTrue(r.ok)
@@ -269,77 +269,77 @@ class TestBioDownloader(unittest.TestCase):
 
     def test_download_structure_from_pdbe_pdb_1(self):
         self.download_structure_from_pdbe(self.pdbid, pdb=True)
-        os.remove(os.path.join(c.db_root, c.db_pdbx, self.pdbid+".pdb"))
+        os.remove(os.path.join(c.db_root, c.db_pdbx, self.pdbid + ".pdb"))
 
     def test_download_structure_from_pdbe_pdb_2(self):
         self.file_downloader([self.pdbid], pdb=True)
-        os.remove(os.path.join(c.db_root, c.db_pdbx, self.pdbid+".pdb"))
+        os.remove(os.path.join(c.db_root, c.db_pdbx, self.pdbid + ".pdb"))
 
     def test_download_structure_from_pdbe_mmcif_1(self):
         self.download_structure_from_pdbe(self.pdbid, pdb=False)
-        os.remove(os.path.join(c.db_root, c.db_pdbx, self.pdbid+".cif"))
+        os.remove(os.path.join(c.db_root, c.db_pdbx, self.pdbid + ".cif"))
 
     def test_download_structure_from_pdbe_mmcif_2(self):
         self.file_downloader([self.pdbid], mmcif=True)
-        os.remove(os.path.join(c.db_root, c.db_pdbx, self.pdbid+".cif"))
+        os.remove(os.path.join(c.db_root, c.db_pdbx, self.pdbid + ".cif"))
 
     def test_download_structure_from_pdbe_mmcif_bio_1(self):
         self.download_structure_from_pdbe(self.pdbid, pdb=False, bio=True)
-        os.remove(os.path.join(c.db_root, c.db_pdbx, self.pdbid+"_bio.cif"))
+        os.remove(os.path.join(c.db_root, c.db_pdbx, self.pdbid + "_bio.cif"))
 
     def test_download_structure_from_pdbe_mmcif_bio_2(self):
         # REM: We are downloading both the mmCIF and assembly!!!
         self.file_downloader([self.pdbid], mmcif=True, bio=True)
-        os.remove(os.path.join(c.db_root, c.db_pdbx, self.pdbid+".cif"))
-        os.remove(os.path.join(c.db_root, c.db_pdbx, self.pdbid+"_bio.cif"))
+        os.remove(os.path.join(c.db_root, c.db_pdbx, self.pdbid + ".cif"))
+        os.remove(os.path.join(c.db_root, c.db_pdbx, self.pdbid + "_bio.cif"))
 
     def test_download_sifts_from_ebi_1(self):
         self.download_sifts_from_ebi(self.pdbid)
-        os.remove(os.path.join(c.db_root, c.db_sifts, self.pdbid+".xml"))
-    
+        os.remove(os.path.join(c.db_root, c.db_sifts, self.pdbid + ".xml"))
+
     def test_download_sifts_from_ebi_2(self):
         self.file_downloader([self.pdbid], sifts=True)
-        os.remove(os.path.join(c.db_root, c.db_sifts, self.pdbid+".xml"))
+        os.remove(os.path.join(c.db_root, c.db_sifts, self.pdbid + ".xml"))
 
     def test_download_data_from_uniprot_fasta_1(self):
         self.download_data_from_uniprot(self.uniprotid, file_format="fasta")
-        os.remove(os.path.join(c.db_root, c.db_uniprot, self.uniprotid+".fasta"))
-    
+        os.remove(os.path.join(c.db_root, c.db_uniprot, self.uniprotid + ".fasta"))
+
     def test_download_data_from_uniprot_fasta_2(self):
         self.file_downloader([self.uniprotid], fasta=True)
-        os.remove(os.path.join(c.db_root, c.db_uniprot, self.uniprotid+".fasta"))
+        os.remove(os.path.join(c.db_root, c.db_uniprot, self.uniprotid + ".fasta"))
 
     def test_download_data_from_uniprot_gff_1(self):
         self.download_data_from_uniprot(self.uniprotid, file_format="gff")
-        os.remove(os.path.join(c.db_root, c.db_uniprot, self.uniprotid+".gff"))
-    
+        os.remove(os.path.join(c.db_root, c.db_uniprot, self.uniprotid + ".gff"))
+
     def test_download_data_from_uniprot_gff_2(self):
         self.file_downloader([self.uniprotid], gff=True)
-        os.remove(os.path.join(c.db_root, c.db_uniprot, self.uniprotid+".gff"))
+        os.remove(os.path.join(c.db_root, c.db_uniprot, self.uniprotid + ".gff"))
 
     def test_download_data_from_uniprot_txt_1(self):
         self.download_data_from_uniprot(self.uniprotid, file_format="txt")
-        os.remove(os.path.join(c.db_root, c.db_uniprot, self.uniprotid+".txt"))
-    
+        os.remove(os.path.join(c.db_root, c.db_uniprot, self.uniprotid + ".txt"))
+
     def test_download_data_from_uniprot_txt_2(self):
         self.file_downloader([self.uniprotid], txt=True)
-        os.remove(os.path.join(c.db_root, c.db_uniprot, self.uniprotid+".txt"))
+        os.remove(os.path.join(c.db_root, c.db_uniprot, self.uniprotid + ".txt"))
 
     def test_download_alignment_from_cath_1(self):
         self.download_alignment_from_cath(self.cathid)
-        os.remove(os.path.join(c.db_root, c.db_cath, self.cathid+".fasta"))
+        os.remove(os.path.join(c.db_root, c.db_cath, self.cathid + ".fasta"))
 
     def test_download_alignment_from_cath_2(self):
         self.file_downloader([self.cathid], cath=True)
-        os.remove(os.path.join(c.db_root, c.db_cath, self.cathid+".fasta"))
+        os.remove(os.path.join(c.db_root, c.db_cath, self.cathid + ".fasta"))
 
     def test_download_alignment_from_pfam_1(self):
         self.download_alignment_from_pfam(self.pfamid)
-        os.remove(os.path.join(c.db_root, c.db_pfam, self.pfamid+".sth"))
-    
+        os.remove(os.path.join(c.db_root, c.db_pfam, self.pfamid + ".sth"))
+
     def test_download_alignment_from_pfam_2(self):
         self.file_downloader([self.pfamid], pfam=True)
-        os.remove(os.path.join(c.db_root, c.db_pfam, self.pfamid+".sth"))
+        os.remove(os.path.join(c.db_root, c.db_pfam, self.pfamid + ".sth"))
 
     def test_cli_version(self):
         runner = CliRunner()
@@ -425,6 +425,7 @@ class TestBioDownloader(unittest.TestCase):
                                                     '--output',
                                                     self.tmp, self.pdbid])
             self.assertEqual(result.exit_code, 0)
+
 
 if __name__ == '__main__':
     suite = unittest.TestLoader().loadTestsFromTestCase(TestBioDownloader)
