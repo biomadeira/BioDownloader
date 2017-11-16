@@ -28,6 +28,7 @@ __author__ = 'Fábio Madeira'
 __email__ = 'fabiomadeira@me.com'
 __version__ = '0.1.0'
 
+
 def gather_dependencies():
     import os
     with open('requirements.txt', 'r') as f_in:

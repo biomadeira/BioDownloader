@@ -59,4 +59,5 @@ class Config(object):
             value = self.config[key]
             setattr(self, key, value)
 
+
 config = Config(config=config_defaults)
