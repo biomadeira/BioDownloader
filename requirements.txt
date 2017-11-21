@@ -17,7 +17,7 @@
 # > pip install -r requirements.txt
 
 # requirements
-requests
-responses
-click
-click_log
+requests>=2.18.2
+responses>=0.8.1
+click>=6.7
+click_log>=0.2.1
