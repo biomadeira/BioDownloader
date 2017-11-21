@@ -24,9 +24,10 @@ import click
 import click_log
 import logging
 
-logger = logging.getLogger("biodownloader")
-
 import biodownloader.version
+
+logger = logging.getLogger("biodownloader")
+click_log.basic_config(logger)
 
 
 # https://github.com/pallets/click/issues/108
@@ -46,7 +47,6 @@ common_options = [
                  help='Directory path to which the files will be written.'),
 ]
 
-
 common_arguments = [
     click.argument('ids', nargs=-1, required=True),
 ]
@@ -56,7 +56,6 @@ common_arguments = [
 @click.group(chain=True,
              context_settings={'help_option_names': ['-h', '--help']})
 @click.version_option(version=biodownloader.version.__version__)
-@click_log.init("biodownloader")
 def downloads():
     """
     BioDownloader: a Command Line Tool for downloading protein
@@ -183,12 +182,11 @@ def pfam(ids, pfam=False, override=False, output_dir=None):
 def file_downloader(ids, pdb=False, mmcif=False, bio=False, sifts=False,
                     fasta=False, gff=False, txt=False, cath=False, pfam=False,
                     override=False, output_dir=None):
-    
     # Modify config if necessary
     if output_dir is not None:
         from biodownloader.config import config
         config.db_root = output_dir
-    
+
     # Download relevant information
     for pid in ids:
 
